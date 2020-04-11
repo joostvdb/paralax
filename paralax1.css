@@ -6,6 +6,7 @@ body {
 
 .paralax-container {
     min-height: 100vh;
+    position: relative;
 }
 .paralax-container.alt {
     background-color: lavenderblush;

@@ -55,6 +55,12 @@ var output = {
         current: 0,
 
     },
+    scrollY: {
+        start: 0,
+        end: 600,
+        current: 0,
+
+    },
     zIndex: {
         range: 10000,
     },
@@ -72,6 +78,7 @@ var output = {
 output.scale.range = output.scale.end - output.scale.start
 output.X.range = output.X.end - output.X.start
 output.Y.range = output.Y.end - output.Y.start
+output.scrollY.range = output.scrollY.end - output.scrollY.start
 
 var mouse = {
     x: window.innerWidth / 0.5,
@@ -95,11 +102,11 @@ var updateInputs = function() {
 
 var updateOutputs = function() {
 
-    // output.X.current= output.X.end - (input.mouseX.fraction * output.X.range);
+    output.X.current= output.X.end - (input.mouseX.fraction * output.X.range);
     
-    // output.Y.current= output.Y.end - (input.mouseY.fraction * output.Y.range);
+    output.Y.current= output.Y.end - (input.mouseY.fraction * output.Y.range);
 
-    output.Y.current= output.Y.end - (input.scrollY.fraction * output.Y.range);
+    output.scrollY.current= output.scrollY.start + (input.scrollY.fraction * output.scrollY.range);
 
 
 
@@ -111,9 +118,19 @@ var updateEachparalaxitem = function() {
 
     itemsA.forEach(function (item, k) {
         var depth = parseFloat(item.dataset.depth, 10);
+        var itemInput = {
+            scrollY: {
+                start: item.offsetParent.offsetTop,
+                end: item.offsetParent.offsetTop + window.innerHeight,
+            }
+        }
+        itemInput.scrollY.range = itemInput.scrollY.end - itemInput.scrollY.start;
+        itemInput.scrollY.fraction= (input.scrollY.current - itemInput.scrollY.start)/ itemInput.scrollY.range;
+        var itemOutputYcurrent = output.scrollY.start + (itemInput.scrollY.fraction * output.scrollY.range);
+
         var itemOutput = {
             x: output.X.current-(output.X.current * depth),
-            y: output.Y.current-(output.Y.current * depth),
+            y: (itemOutputYcurrent* depth) + (output.Y.current - (output.Y.current*depth)),
             zIndex: output.zIndex.range - (output.zIndex.range * depth),
             scale: output.scale.start + (output.scale.range * depth),
             blur: (depth - output.blur.startingdepth)*output.blur.range,
